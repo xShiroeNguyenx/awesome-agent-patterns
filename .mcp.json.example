@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "awesome-agent-patterns": {
+      "command": "node",
+      "args": ["D:/NGUYENKHANH/awesome-agent-patterns/mcp-server/dist/index.js"]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+mcp-server/dist/
+demo/dist/
+
+# generated index artifacts (run `npm run build:index` to regenerate)
+patterns/index.json
+recipes/index.json
+
+# misc
+*.local
+.DS_Store
+*.log
+.env
+.env.*
