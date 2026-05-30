@@ -76,6 +76,12 @@
 - `mcp-server/package.json` bỏ `private`, thêm metadata (license/repo/keywords/files/bin/engines). `mcp-server/content/` đã thêm vào `.gitignore` (artifact, sinh lúc pack).
 - Demo build cho Pages dùng `--base=/awesome-agent-patterns/` (Pages phục vụ ở `/<repo>/`).
 
+## Lưu ý Windows khi cài MCP (đã gặp & fix)
+- MCP client (Claude Code) spawn `npx` **trực tiếp** trên Windows → pipe stdio không ổn định → "Failed to connect" (dù chạy `npx ...` ở terminal vẫn lên server bình thường). **Fix:** bọc `cmd /c`:
+  `{"command":"cmd","args":["/c","npx","-y","@shiroe_nguyen/awesome-agent-patterns-mcp"]}`.
+- Đã xác minh `scripts/smoke-published.mjs` (dùng `cmd /c npx` trên Windows) → 16 patterns + get_recipe OK.
+- `claude mcp add ... -- npx -y <pkg>` bị lỗi `unknown option '-y'` (claude nuốt `-y`). Dùng **`claude mcp add-json`** truyền JSON nguyên khối thay vì `add ... --`.
+
 ## Việc CẦN BẠN làm tay (không tự làm qua đêm được)
 - **Bật npm publish:** tạo npm **Automation token** → thêm secret **`NPM_TOKEN`** vào repo (Settings → Secrets and variables → Actions). Thiếu token thì job release sẽ fail ở bước publish.
 - **Bật GitHub Pages:** Settings → Pages → Source = **GitHub Actions** (lần đầu). Push `main` xong demo sẽ lên `https://xshiroenguyenx.github.io/awesome-agent-patterns/`.

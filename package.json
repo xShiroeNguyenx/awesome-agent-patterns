@@ -18,6 +18,7 @@
     "check:render": "tsx scripts/render-check.ts",
     "check:types": "tsc -p tsconfig.patterns.json",
     "smoke": "node scripts/smoke-mcp.mjs",
+    "smoke:published": "node scripts/smoke-published.mjs",
     "start": "node mcp-server/dist/index.js"
   },
   "devDependencies": {

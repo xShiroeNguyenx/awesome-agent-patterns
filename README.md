@@ -72,6 +72,14 @@ npm run dev:demo       # open the demo gallery (Vite dev server)
 }
 ```
 
+> **Windows:** spawning `npx` directly for an MCP stdio server is unreliable — wrap it in `cmd /c`:
+> ```jsonc
+> { "mcpServers": { "awesome-agent-patterns": {
+>   "command": "cmd",
+>   "args": ["/c", "npx", "-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
+> } } }
+> ```
+
 **From a local clone** (for development, or before publishing) — run `npm run build`, then point at
 the built server (an example is at [`.mcp.json.example`](.mcp.json.example)):
 
