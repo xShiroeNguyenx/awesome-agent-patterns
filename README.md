@@ -1,7 +1,7 @@
 # awesome-agent-patterns
 
 [![CI](https://github.com/xShiroeNguyenx/awesome-agent-patterns/actions/workflows/ci.yml/badge.svg)](https://github.com/xShiroeNguyenx/awesome-agent-patterns/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/awesome-agent-patterns-mcp.svg)](https://www.npmjs.com/package/awesome-agent-patterns-mcp)
+[![npm](https://img.shields.io/npm/v/@shiroe_nguyen/awesome-agent-patterns-mcp.svg)](https://www.npmjs.com/package/@shiroe_nguyen/awesome-agent-patterns-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 > A UI/UX **pattern knowledge base for AI coding agents**, served over **MCP**.
@@ -66,7 +66,7 @@ npm run dev:demo       # open the demo gallery (Vite dev server)
   "mcpServers": {
     "awesome-agent-patterns": {
       "command": "npx",
-      "args": ["-y", "awesome-agent-patterns-mcp"]
+      "args": ["-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
     }
   }
 }

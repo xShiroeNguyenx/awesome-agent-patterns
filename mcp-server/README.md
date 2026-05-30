@@ -1,4 +1,4 @@
-# awesome-agent-patterns-mcp
+# @shiroe_nguyen/awesome-agent-patterns-mcp
 
 MCP server that exposes a **UI/UX pattern knowledge base** (16 patterns × 5 style variants +
 task recipes) to AI coding agents. Part of
@@ -13,7 +13,7 @@ Add to your MCP client (e.g. Claude Code `.mcp.json`):
   "mcpServers": {
     "awesome-agent-patterns": {
       "command": "npx",
-      "args": ["-y", "awesome-agent-patterns-mcp"]
+      "args": ["-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
     }
   }
 }

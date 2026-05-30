@@ -1,5 +1,5 @@
 {
-  "name": "awesome-agent-patterns-mcp",
+  "name": "@shiroe_nguyen/awesome-agent-patterns-mcp",
   "version": "0.1.0",
   "type": "module",
   "description": "MCP server exposing a UI/UX pattern knowledge base (16 patterns x 5 style variants + recipes) to AI agents.",
