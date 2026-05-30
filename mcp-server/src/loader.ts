@@ -4,11 +4,29 @@ import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 
 const here = dirname(fileURLToPath(import.meta.url));
-// When built: <root>/mcp-server/dist/loader.js  -> repo root is ../../
-// When run via tsx: <root>/mcp-server/src/loader.ts -> repo root is ../../
-const REPO_ROOT = process.env.AAP_ROOT ?? resolve(here, "..", "..");
-const PATTERNS_DIR = process.env.AAP_PATTERNS_DIR ?? join(REPO_ROOT, "patterns");
-const RECIPES_DIR = process.env.AAP_RECIPES_DIR ?? join(REPO_ROOT, "recipes");
+
+function firstExisting(candidates: string[]): string {
+  for (const c of candidates) {
+    if (existsSync(c)) return c;
+  }
+  return candidates[candidates.length - 1];
+}
+
+// Resolve content from (1) an explicit env override, (2) the repo checkout (dev /
+// running from source), or (3) content bundled into the published npm package
+// (mcp-server/content, created by scripts/bundle-content.mjs at pack time).
+const PATTERNS_DIR =
+  process.env.AAP_PATTERNS_DIR ??
+  firstExisting([
+    resolve(here, "..", "..", "patterns"), // dev:       <root>/patterns
+    resolve(here, "..", "content", "patterns"), // published: mcp-server/content/patterns
+  ]);
+const RECIPES_DIR =
+  process.env.AAP_RECIPES_DIR ??
+  firstExisting([
+    resolve(here, "..", "..", "recipes"),
+    resolve(here, "..", "content", "recipes"),
+  ]);
 
 export interface PatternMeta {
   id: string;
@@ -191,4 +209,4 @@ export function findDanglingReferences(): Array<{ source: string; field: string;
   return problems;
 }
 
-export const paths = { REPO_ROOT, PATTERNS_DIR, RECIPES_DIR };
+export const paths = { PATTERNS_DIR, RECIPES_DIR };

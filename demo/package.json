@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "//": "private: not published — demo gallery only.",
   "scripts": {
     "predev": "tsx ../scripts/build-index.ts",
     "dev": "vite",

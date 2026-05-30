@@ -6,6 +6,9 @@ dist/
 mcp-server/dist/
 demo/dist/
 
+# bundled content for npm publish (generated at pack time by prepack)
+mcp-server/content/
+
 # generated index artifacts (run `npm run build:index` to regenerate)
 patterns/index.json
 recipes/index.json

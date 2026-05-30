@@ -1,17 +1,48 @@
 {
-  "name": "@awesome-agent-patterns/mcp-server",
+  "name": "awesome-agent-patterns-mcp",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
-  "description": "MCP server that exposes the UI/UX pattern knowledge base to AI agents.",
+  "description": "MCP server exposing a UI/UX pattern knowledge base (16 patterns x 5 style variants + recipes) to AI agents.",
+  "license": "MIT",
+  "author": "xShiroeNguyenx",
+  "homepage": "https://github.com/xShiroeNguyenx/awesome-agent-patterns#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xShiroeNguyenx/awesome-agent-patterns.git",
+    "directory": "mcp-server"
+  },
+  "bugs": "https://github.com/xShiroeNguyenx/awesome-agent-patterns/issues",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agents",
+    "claude",
+    "ui-patterns",
+    "design-system",
+    "react",
+    "tailwindcss",
+    "knowledge-base"
+  ],
   "bin": {
-    "awesome-agent-patterns": "dist/index.js"
+    "awesome-agent-patterns-mcp": "dist/index.js"
   },
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "content"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "bundle:content": "node scripts/bundle-content.mjs",
     "dev": "tsx src/index.ts",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prepack": "npm run build && npm run bundle:content"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

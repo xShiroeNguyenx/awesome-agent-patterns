@@ -69,7 +69,18 @@
 - Subagent fix vài chỗ a11y khi re-skin: neumorphism đơn sắc nên thêm `focus-visible:ring` thay cho `focus:outline-none`, lỗi (validation/error) vẫn dùng đỏ để đọc được. Đã đọc tay xác nhận chất lượng `product-card/brutalism` (khớp spec, giữ 4 state + a11y).
 - Gate sau khi thêm: typecheck **80** file OK · render gate **80/80** OK · `vite build` OK (JS ~1MB, chỉ là cảnh báo chunk-size) · MCP smoke OK.
 
+## Release + CI/CD (sau khi push GitHub)
+- **MCP server đóng gói self-contained để publish npm:** thêm `mcp-server/scripts/bundle-content.mjs` (chạy ở `prepack`) copy `patterns/`+`recipes/` vào `mcp-server/content/`. Loader resolve theo thứ tự: env override → repo `../../patterns` (dev) → `../content/patterns` (đã publish). Đã verify: tarball `npm pack` gồm dist + content (16 pattern.md, 80 .tsx, 6 recipe) — 109 files, 121 kB.
+- **Tên package npm:** `awesome-agent-patterns-mcp` (unscoped, để `npx awesome-agent-patterns-mcp` chạy thẳng). *Nếu tên đã bị chiếm* → đổi sang scoped `@<npm-username>/awesome-agent-patterns-mcp` + `publishConfig.access=public`.
+- **3 workflow** (`.github/workflows/`): `ci.yml` (gate mỗi push/PR), `pages.yml` (deploy demo lên Pages khi push `main`, base `/awesome-agent-patterns/`), `release.yml` (tag `v*` → npm publish + GitHub Release `--generate-notes`).
+- `mcp-server/package.json` bỏ `private`, thêm metadata (license/repo/keywords/files/bin/engines). `mcp-server/content/` đã thêm vào `.gitignore` (artifact, sinh lúc pack).
+- Demo build cho Pages dùng `--base=/awesome-agent-patterns/` (Pages phục vụ ở `/<repo>/`).
+
 ## Việc CẦN BẠN làm tay (không tự làm qua đêm được)
+- **Bật npm publish:** tạo npm **Automation token** → thêm secret **`NPM_TOKEN`** vào repo (Settings → Secrets and variables → Actions). Thiếu token thì job release sẽ fail ở bước publish.
+- **Bật GitHub Pages:** Settings → Pages → Source = **GitHub Actions** (lần đầu). Push `main` xong demo sẽ lên `https://xshiroenguyenx.github.io/awesome-agent-patterns/`.
+- **Cắt release:** `git tag v0.1.0 && git push origin v0.1.0` → tự publish npm + tạo GitHub Release.
+- **(nếu tên npm bị trùng)** đổi `name` trong `mcp-server/package.json` sang scoped như trên.
 - **Wire MCP vào Claude Code** rồi hỏi agent thử (xem README + `.mcp.json.example`). Tôi đã chứng minh pipeline bằng smoke test thay cho bước này.
 - **Xem demo bằng mắt + thử tương tác:** `npm run dev:demo` → mở http://localhost:5173 (hoặc port hiện trong terminal) để duyệt 16 pattern.
   - ⚠️ **Giới hạn của các gate:** chúng đều là gate *cấu trúc* — typecheck (compile sạch), render gate chỉ chứng minh component **mount lần đầu không throw** (`renderToStaticMarkup` KHÔNG chạy `useEffect`/timer/event handler), vite build (bundle sạch), integrity (link không gãy), smoke (MCP roundtrip). **Hành vi tương tác KHÔNG được tự động kiểm tra**: toast auto-dismiss, modal ESC/restore-focus, search debounce, login submit, CRUD add/edit/delete — nên click thử trong demo để xác nhận.

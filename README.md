@@ -1,10 +1,16 @@
 # awesome-agent-patterns
 
+[![CI](https://github.com/xShiroeNguyenx/awesome-agent-patterns/actions/workflows/ci.yml/badge.svg)](https://github.com/xShiroeNguyenx/awesome-agent-patterns/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/awesome-agent-patterns-mcp.svg)](https://www.npmjs.com/package/awesome-agent-patterns-mcp)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 > A UI/UX **pattern knowledge base for AI coding agents**, served over **MCP**.
 >
 > Instead of inventing UI from scratch every time, an agent asked to build *"a product list page"*
 > consults this server, pulls the proven patterns (table + filter + pagination + loading +
 > empty-state), and assembles the page from them.
+
+🎨 **Live demo gallery:** https://xshiroenguyenx.github.io/awesome-agent-patterns/ (after first Pages deploy)
 
 **Stack:** patterns are React + TypeScript + Tailwind CSS · MCP server is TypeScript/Node ·
 demo gallery is Vite + React + Tailwind.
@@ -52,8 +58,22 @@ npm run dev:demo       # open the demo gallery (Vite dev server)
 
 ## Connect it to an AI agent (MCP)
 
-After `npm run build`, point your MCP client at the built server. For **Claude Code**, add to your
-project `.mcp.json` (an example is included at the repo root) or user config:
+**Easiest — via npm (no clone needed).** Once published, add to your MCP client (e.g. Claude Code
+`.mcp.json` or user config). The package bundles the pattern content, so it just works:
+
+```jsonc
+{
+  "mcpServers": {
+    "awesome-agent-patterns": {
+      "command": "npx",
+      "args": ["-y", "awesome-agent-patterns-mcp"]
+    }
+  }
+}
+```
+
+**From a local clone** (for development, or before publishing) — run `npm run build`, then point at
+the built server (an example is at [`.mcp.json.example`](.mcp.json.example)):
 
 ```jsonc
 {
@@ -105,6 +125,27 @@ scripts/{build-index,check-integrity,render-check}.ts, smoke-mcp.mjs
 
 See **[PLAN.md](PLAN.md)** for the design rationale, **[CHECKLIST.md](CHECKLIST.md)** for the build
 phases, and **[DECISIONS.md](DECISIONS.md)** for autonomous build decisions.
+
+## CI/CD
+
+Three GitHub Actions workflows ([`.github/workflows/`](.github/workflows/)):
+
+- **CI** (`ci.yml`) — on every push/PR: build server, typecheck, render gate, integrity, MCP smoke, demo build.
+- **Pages** (`pages.yml`) — on push to `main`: build the demo and deploy to GitHub Pages.
+- **Release** (`release.yml`) — on a `v*` tag: publish `awesome-agent-patterns-mcp` to npm + create a GitHub Release.
+
+**One-time setup:**
+
+1. **npm publishing** — create an npm [Automation token](https://docs.npmjs.com/creating-and-viewing-access-tokens), then add it as repo secret **`NPM_TOKEN`** (Settings → Secrets and variables → Actions).
+2. **Pages** — Settings → Pages → Source = **GitHub Actions**.
+
+**Cut a release:**
+
+```bash
+# bump versions first if needed (root + mcp-server package.json), then:
+git tag v0.1.0
+git push origin v0.1.0      # triggers npm publish + GitHub Release
+```
 
 ## License
 
