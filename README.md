@@ -12,8 +12,120 @@
 
 🎨 **Live demo gallery:** https://xshiroenguyenx.github.io/awesome-agent-patterns/ (after first Pages deploy)
 
-**Stack:** patterns are React + TypeScript + Tailwind CSS · MCP server is TypeScript/Node ·
-demo gallery is Vite + React + Tailwind.
+---
+
+## Install — connect it to your AI agent (MCP)
+
+**No clone, no build.** The npm package bundles all pattern content, so it works out of the box.
+
+### One command (Claude Code)
+
+```bash
+# macOS / Linux
+claude mcp add awesome-agent-patterns -- npx -y @shiroe_nguyen/awesome-agent-patterns-mcp
+
+# Windows — wrap npx in `cmd /c`, otherwise the stdio server spawns unreliably
+claude mcp add awesome-agent-patterns -- cmd /c npx -y @shiroe_nguyen/awesome-agent-patterns-mcp
+```
+
+That's the whole install — no clone, no build, `npx` fetches and runs the server on first launch.
+
+- **Scope:** defaults to your personal config. Add `--scope project` to write a shared
+  [`.mcp.json`](.mcp.json) (committed to git) so your whole team gets it, or `--scope user` for all
+  your projects.
+- **Verify / remove:** `claude mcp list` · `claude mcp remove awesome-agent-patterns`
+
+### One command (Codex CLI)
+
+```bash
+# macOS / Linux
+codex mcp add awesome-agent-patterns -- npx -y @shiroe_nguyen/awesome-agent-patterns-mcp
+
+# Windows — wrap npx in `cmd /c`, same as above
+codex mcp add awesome-agent-patterns -- cmd /c npx -y @shiroe_nguyen/awesome-agent-patterns-mcp
+```
+
+The entry is written to `~/.codex/config.toml` (or a project-scoped `.codex/config.toml`). Manage it
+with `codex mcp --help` (`list` / `remove`). The equivalent TOML block, if you'd rather edit by hand:
+
+```toml
+[mcp_servers.awesome-agent-patterns]
+command = "npx"
+args = ["-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
+```
+
+### Manual config (any MCP client)
+
+If your client isn't Claude Code, add the server to its `mcpServers` config by hand:
+
+```jsonc
+{
+  "mcpServers": {
+    "awesome-agent-patterns": {
+      "command": "npx",
+      "args": ["-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
+    }
+  }
+}
+```
+
+> **Windows:** spawning `npx` directly for an MCP stdio server is unreliable — wrap it in `cmd /c`:
+> ```jsonc
+> { "mcpServers": { "awesome-agent-patterns": {
+>   "command": "cmd",
+>   "args": ["/c", "npx", "-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
+> } } }
+> ```
+
+**Where to put this config**
+
+| Client | Config location |
+|---|---|
+| Claude Code | `.mcp.json` in your project root (or user config) |
+| Cursor | `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global) |
+| Other MCP clients | wherever the client reads `mcpServers` from |
+
+Restart the client after editing. That's it — no install step, `npx` fetches and runs the server on
+first launch.
+
+> Prefer to install globally instead of `npx`-on-demand? Run
+> `npm i -g @shiroe_nguyen/awesome-agent-patterns-mcp`, then set `"command"` to
+> `awesome-agent-patterns-mcp` with empty `"args"`.
+
+### What your agent gets
+
+Once connected, the agent has these 5 tools:
+
+| Tool | Input | Returns |
+|---|---|---|
+| `list_patterns` | — | lightweight index (id, title, category, when-to-use, tags) |
+| `get_pattern` | `{ id }` | full docs + React/TS/Tailwind code for one pattern (all 5 style variants) |
+| `search_patterns` | `{ query }` | ranked keyword matches |
+| `list_recipes` | — | tasks → ordered pattern sets |
+| `get_recipe` | `{ task, inline_patterns? }` | a recipe; `inline_patterns:true` embeds every pattern's docs+code |
+
+**Typical agent flow:** `get_recipe("product-list-page")` → `[table, filter, pagination, loading,
+empty-state, error-state]` → `get_pattern` for each → build the page from proven patterns.
+
+### Example prompts to try
+
+Once connected, just describe the screen you want in plain language — the agent pulls the matching
+recipe and patterns on its own. No need to name the tools:
+
+| You say… | The agent does… |
+|---|---|
+| *"Build a product list page with filters and pagination."* | `get_recipe("product-list-page")` → table · filter · pagination · loading · empty-state · error-state |
+| *"Scaffold a CRUD admin screen for managing users."* | `get_recipe("crud-admin-page")` |
+| *"Add a login / signup flow."* | `get_recipe("auth-flow")` |
+| *"Make a checkout flow."* | `get_recipe("checkout-flow")` |
+| *"Give me a dashboard home page."* | `get_recipe("dashboard-home")` |
+| *"Set up the app shell (header + sidebar)."* | `get_recipe("app-shell")` |
+| *"What patterns do you have for loading states?"* | `search_patterns({ query: "loading" })` |
+| *"Show me the toast pattern, all style variants."* | `get_pattern({ id: "toast" })` |
+| *"Re-skin the table in the neon style."* | `get_pattern({ id: "table" })` → use the `neon` variant |
+
+> 💡 Tip: phrase it as the **outcome** ("a settings page with a sidebar and a form"), not the tool.
+> The agent maps your request to a recipe, then assembles the page from the returned patterns.
 
 ---
 
@@ -39,121 +151,18 @@ demo gallery is Vite + React + Tailwind.
 | auth | login |
 | page | dashboard, crud |
 
----
-
-## Quick start
-
-```bash
-npm install            # install all workspaces
-npm run build          # build the MCP server -> mcp-server/dist
-npm run smoke          # end-to-end MCP roundtrip (16 patterns, 6 recipes, flagship flow)
-
-npm run build:index    # (re)generate patterns/index.json + recipes/index.json
-npm run check:integrity  # no dangling composes/related/recipe links
-npm run check:types    # typecheck every example component
-npm run check:render   # mount every example in Node (enforces the demo contract)
-
-npm run dev:demo       # open the demo gallery (Vite dev server)
-```
-
-## Connect it to an AI agent (MCP)
-
-**Easiest — via npm (no clone needed).** Once published, add to your MCP client (e.g. Claude Code
-`.mcp.json` or user config). The package bundles the pattern content, so it just works:
-
-```jsonc
-{
-  "mcpServers": {
-    "awesome-agent-patterns": {
-      "command": "npx",
-      "args": ["-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
-    }
-  }
-}
-```
-
-> **Windows:** spawning `npx` directly for an MCP stdio server is unreliable — wrap it in `cmd /c`:
-> ```jsonc
-> { "mcpServers": { "awesome-agent-patterns": {
->   "command": "cmd",
->   "args": ["/c", "npx", "-y", "@shiroe_nguyen/awesome-agent-patterns-mcp"]
-> } } }
-> ```
-
-**From a local clone** (for development, or before publishing) — run `npm run build`, then point at
-the built server (an example is at [`.mcp.json.example`](.mcp.json.example)):
-
-```jsonc
-{
-  "mcpServers": {
-    "awesome-agent-patterns": {
-      "command": "node",
-      "args": ["D:/NGUYENKHANH/awesome-agent-patterns/mcp-server/dist/index.js"]
-    }
-  }
-}
-```
-
-The agent then has these tools:
-
-| Tool | Input | Returns |
-|---|---|---|
-| `list_patterns` | — | lightweight index (id, title, category, when-to-use, tags) |
-| `get_pattern` | `{ id }` | full docs + React/TS/Tailwind code for one pattern |
-| `search_patterns` | `{ query }` | ranked keyword matches |
-| `list_recipes` | — | tasks → ordered pattern sets |
-| `get_recipe` | `{ task, inline_patterns? }` | a recipe; `inline_patterns:true` embeds every pattern's docs+code |
-
-**Typical agent flow:** `get_recipe("product-list-page")` → `[table, filter, pagination, loading,
-empty-state, error-state]` → `get_pattern` for each → build the page from proven patterns.
+**Stack:** patterns are React + TypeScript + Tailwind CSS · MCP server is TypeScript/Node ·
+demo gallery is Vite + React + Tailwind.
 
 ---
 
-## How to add a pattern
+## Running or contributing to the project
 
-1. Create `patterns/<id>/pattern.md` following **[patterns/SCHEMA.md](patterns/SCHEMA.md)** (frontmatter + 6 sections).
-2. Add `patterns/<id>/examples/<Component>.tsx` — a **default-export component with zero required
-   props**, importing only from `react`, Tailwind classes only, SSR-safe initial render.
-3. Update `composes` / `related` on related patterns (and a recipe if relevant).
-4. Run the gates: `npm run check:integrity && npm run check:types && npm run check:render && npm run build:index`.
+Cloning, building, running the demo, adding patterns, and the CI/CD setup all live in
+**[DEVELOPMENT.md](DEVELOPMENT.md)**.
 
-The MCP server discovers new patterns automatically on its next start — no server code changes.
-
----
-
-## Project layout
-
-```
-patterns/<id>/pattern.md + examples/*.tsx   # the knowledge base content
-recipes/<task>.md                           # task -> ordered pattern set
-mcp-server/src/{index,loader,tools}.ts      # the MCP server
-demo/src/App.tsx                            # the gallery (auto-discovers patterns)
-scripts/{build-index,check-integrity,render-check}.ts, smoke-mcp.mjs
-```
-
-See **[PLAN.md](PLAN.md)** for the design rationale, **[CHECKLIST.md](CHECKLIST.md)** for the build
-phases, and **[DECISIONS.md](DECISIONS.md)** for autonomous build decisions.
-
-## CI/CD
-
-Three GitHub Actions workflows ([`.github/workflows/`](.github/workflows/)):
-
-- **CI** (`ci.yml`) — on every push/PR: build server, typecheck, render gate, integrity, MCP smoke, demo build.
-- **Pages** (`pages.yml`) — on push to `main`: build the demo and deploy to GitHub Pages.
-- **Release** (`release.yml`) — on a `v*` tag: publish `awesome-agent-patterns-mcp` to npm + create a GitHub Release.
-
-**One-time setup:**
-
-1. **npm publishing** — create an npm [Automation token](https://docs.npmjs.com/creating-and-viewing-access-tokens), then add it as repo secret **`NPM_TOKEN`** (Settings → Secrets and variables → Actions).
-2. **Pages** — Settings → Pages → Source = **GitHub Actions**.
-
-**Cut a release:**
-
-```bash
-# bump versions first if needed (root + mcp-server package.json), then:
-git tag v0.1.0
-git push origin v0.1.0      # triggers npm publish + GitHub Release
-```
+See also **[PLAN.md](PLAN.md)** for the design rationale, **[CHECKLIST.md](CHECKLIST.md)** for the
+build phases, and **[DECISIONS.md](DECISIONS.md)** for autonomous build decisions.
 
 ## License
 
